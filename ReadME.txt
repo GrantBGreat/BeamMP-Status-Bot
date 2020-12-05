@@ -1,1 +1,0 @@
-The bot is open source and run by discord user GrantBGreat#1165
