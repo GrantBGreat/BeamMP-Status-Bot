@@ -26,7 +26,7 @@ async def on_ready():
 
 #########################################COMMANDS#####################################################################
 
-@bot.command(name="help", description = "Learn What each command does.") #help command
+@bot.command(name="help", description = "Learn what each command does.") #help command
 async def help(ctx, args=None):
     help_embed = discord.Embed(title="BeamMP Status Commands:", color = 0x8a3f0a)
     command_names_list = [i.name for i in bot.commands]
@@ -48,7 +48,7 @@ async def help(ctx, args=None):
     elif args in command_names_list:
         help_embed.add_field(
             name=args,
-            value=bot.get_command(args).help
+            value=bot.get_command(args).description
         )
 
     # If else:
@@ -61,7 +61,8 @@ async def help(ctx, args=None):
     await ctx.send(embed=help_embed)
 
 
-@bot.command(name = "save", description = "Can be run by admins only.\n\nThis command sets the server that can be reached by doing the `!check` command\n\n**Impemetation:**\n`!save <ip>:<port>")
+
+@bot.command(name = "save", description = "Can be run by admins only.\n\nThis command sets the server that can be reached by doing the `!check` command\n\n**Impemetation:**\n`!save <user>`")
 @commands.has_permissions(administrator=True)
 async def save(ctx, change=None, val=None):
     save_embed = discord.Embed(title="Server Save:", color = 0x8a3f0a)
