@@ -63,13 +63,17 @@ async def help(ctx, args=None):
 
 @bot.command(name = "save", description = "Can be run by admins only.\n\nThis command sets the server that can be reached by doing the `!check` command\n\n**Impemetation:**\n`!save <ip>:<port>")
 @commands.has_permissions(administrator=True)
-async def save(ctx, user):
+async def save(ctx, change=None, val=None):
     save_embed = discord.Embed(title="Server Save:", color = 0x8a3f0a)
-
-    if 1 == 0: #must add implemetation
-        save_embed.add_field(name='Success!', value="The discord's BeamMP server has been set to:\n{user}")
+    if change == "server":
+        if 1 == 0: #must add implemetation
+            save_embed.add_field(name='Success!', value=f"The discord's BeamMP server has been set to:\n{val}")
+        else:
+            save_embed.add_field(name='ERROR', value="Please enter a valid user\n`!save <user>`")
+    elif change == "prefix":
+        return
     else:
-        save_embed.add_field(name='ERROR', value="Please enter a valid ip and port\n`!save <user>`")
+        save_embed.add_field(name='ERROR', value="Please enter a valid syntax\n`!save <type>...`")
 
     await ctx.send(embed=save_embed)
 
