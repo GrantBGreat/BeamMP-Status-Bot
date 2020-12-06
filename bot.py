@@ -29,22 +29,22 @@ async def on_ready():
 @bot.command(name="help", description = "Learn What each command does.") #help command
 async def help(ctx, args=None):
     help_embed = discord.Embed(title="BeamMP Status Commands:", color = 0x8a3f0a)
-    command_names_list = [x.name for x in bot.commands]
+    command_names_list = [i.name for i in bot.commands]
 
     # If there are no arguments, just list the commands:
     if not args:
         help_embed.add_field(
             name="List of supported commands:",
-            value="\n".join([x.name for x in bot.commands]),
+            value="\n".join([i.name for i in bot.commands]),
             inline=False
         )
         help_embed.add_field(
             name="Details",
-            value="Do `!help <command name>` for more details about a command.",
+            value="Type `!help <command name>` for more details about a command.",
             inline=False
         )
 
-    # If is a valic command:
+    # If is a valid command:
     elif args in command_names_list:
         help_embed.add_field(
             name=args,
@@ -54,7 +54,7 @@ async def help(ctx, args=None):
     # If else:
     else:
         help_embed.add_field(
-            name="Nope.",
+            name="ERROR",
             value="That is not a valid command!"
         )
 
