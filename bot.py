@@ -1,6 +1,7 @@
 import os
 import random
 import discord
+import sqlite3
 
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -11,6 +12,10 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 bot = commands.Bot(command_prefix='!', description="The bot for all your BeamMP needs.", help_command = None, case_insensitive = True)
 
 print("Bot is starting...")
+
+
+
+
 
 @bot.event
 async def on_ready():
@@ -62,7 +67,7 @@ async def save(ctx, server_ip, server_port):
     save_embed = discord.Embed(title="Server Save:", color = 0x8a3f0a)
 
     if 1 == 0: #must add implemetation
-        save_embed.add_field(name='success!', value="The discord's BeamMP server has been set to:\n{server_ip}:{server_port}")
+        save_embed.add_field(name='Success!', value="The discord's BeamMP server has been set to:\n{server_ip}:{server_port}")
     else:
         save_embed.add_field(name='ERROR', value="Please enter a valid ip and port\n`!save <ip>:<port>`")
 
