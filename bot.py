@@ -21,6 +21,18 @@ print("Bot is starting...")
 
 @bot.event
 async def on_ready():
+    conn = sqlite3.connect("main.db")
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS main (
+            guild_id integer,
+            owner_id integer
+        )''')
+
+    conn.commit()
+
+    conn.close()
+
+
     print('\n\nLogged in as')
     print(bot.user.name)
     print(bot.user.id)
