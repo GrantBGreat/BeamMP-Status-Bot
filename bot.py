@@ -25,7 +25,8 @@ async def on_ready():
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS main (
             guild_id integer,
-            owner_id integer
+            owner_id integer,
+            prefix text
         )''')
 
     conn.commit()
@@ -95,6 +96,10 @@ async def save(ctx, change=None, val=None):
 
     await ctx.send(embed=save_embed)
 
+
+########################################CATCH-ERRORS##################################################################
+
+
 @save.error
 async def save_error(ctx, error):
     if isinstance(error, MissingPermissions):
@@ -108,10 +113,5 @@ async def on_command_error(ctx, error):
         error_embed = discord.Embed(title="ERROR", color = 0x8a3f0a)
         error_embed.add_field(name='Command on Cooldown:', value="Please retry in %s seconds" % int(error.retry_after))
         await ctx.send(embed=error_embed)
-
-
-
-######################################################################################################################
-
 
 bot.run(TOKEN)
