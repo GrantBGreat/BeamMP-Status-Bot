@@ -5,6 +5,8 @@ import sqlite3
 
 from discord.ext import commands
 from dotenv import load_dotenv
+from discord import Member
+from discord.ext.commands import has_permissions, MissingPermissions
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -62,21 +64,29 @@ async def help(ctx, args=None):
 
 
 
-@bot.command(name = "save", description = "Can be run by admins only.\n\nThis command sets the server that can be reached by doing the `!check` command\n\n**Impemetation:**\n`!save <user>`")
-@commands.has_permissions(administrator=True)
+@bot.command(name = "save", description = "Can be run by admins only.\n\nThis command sets the server that can be reached by doing the `!check` command\n\n**Impemetations:**\n`!save server <user>`\n`!save prefix <prefix>`", pass_context=True)
+@has_permissions(administrator=True)
 async def save(ctx, change=None, val=None):
-    save_embed = discord.Embed(title="Server Save:", color = 0x8a3f0a)
+    save_embed = discord.Embed(title="Settings:", color = 0x8a3f0a)
     if change == "server":
         if 1 == 0: #must add implemetation
             save_embed.add_field(name='Success!', value=f"The discord's BeamMP server has been set to:\n{val}")
         else:
-            save_embed.add_field(name='ERROR', value="Please enter a valid user\n`!save <user>`")
+            save_embed.add_field(name='ERROR', value="Please enter a valid user\n`!save server <user>`\n\nExample:\n`!save server dummy#1234`")
     elif change == "prefix":
-        return
+        return #must add implemetation
     else:
         save_embed.add_field(name='ERROR', value="Please enter a valid syntax\n`!save <type>...`")
 
     await ctx.send(embed=save_embed)
+
+@save.error
+async def save_error(ctx, error):
+    if isinstance(error, MissingPermissions):
+        error_embed = discord.Embed(title="Settings:", color = 0x8a3f0a)
+        error_embed.add_field(name='No perms', value="Sorry {}, you do not have permissions to do that!".format(ctx.message.author))
+        await ctx.send(embed=error_embed)
+
 
 
 ######################################################################################################################
