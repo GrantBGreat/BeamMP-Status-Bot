@@ -28,7 +28,8 @@ async def on_ready():
 
 #########################################COMMANDS#####################################################################
 
-@bot.command(name="help", description = "Learn what each command does.") #help command
+@bot.command(name="help", description = "Learn what each command does.", pass_context=True) #help command
+@commands.cooldown(1, 5, commands.BucketType.guild)
 async def help(ctx, args=None):
     help_embed = discord.Embed(title="BeamMP Status Commands:", color = 0x8a3f0a)
     command_names_list = [i.name for i in bot.commands]
@@ -64,7 +65,9 @@ async def help(ctx, args=None):
 
 
 
+
 @bot.command(name = "save", description = "Can be run by admins only.\n\nThis command sets the server that can be reached by doing the `!check` command\n\n**Impemetations:**\n`!save server <user>`\n`!save prefix <prefix>`", pass_context=True)
+@commands.cooldown(1, 5, commands.BucketType.guild)
 @has_permissions(administrator=True)
 async def save(ctx, change=None, val=None):
     save_embed = discord.Embed(title="Settings:", color = 0x8a3f0a)
@@ -85,6 +88,13 @@ async def save_error(ctx, error):
     if isinstance(error, MissingPermissions):
         error_embed = discord.Embed(title="Settings:", color = 0x8a3f0a)
         error_embed.add_field(name='No perms', value="Sorry {}, you do not have permissions to do that!".format(ctx.message.author))
+        await ctx.send(embed=error_embed)
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+        error_embed = discord.Embed(title="ERROR", color = 0x8a3f0a)
+        error_embed.add_field(name='Command on Cooldown:', value="Please retry in %s seconds" % int(error.retry_after))
         await ctx.send(embed=error_embed)
 
 
