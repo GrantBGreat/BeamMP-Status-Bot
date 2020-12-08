@@ -86,7 +86,7 @@ async def save(ctx, change=None, val=None):
         try:
             raw = val
             uid = (await commands.UserConverter().convert(ctx, val)).id
-            save_embed.add_field(name='Success!', value=f"The discord's BeamMP server owner has been set to:\n{raw}\nid: {uid}\n\nIf this is not the correct user then simply run the command again. Remember that users are caps sensitive.")
+            save_embed.add_field(name='Success!', value=f"The BeamMP server owner for this guild has been set to:\n{raw}\nid: {uid}\n\nIf this is not the correct user then simply run the command again. Remember that users are caps sensitive.")
         except commands.UserNotFound:
             save_embed.add_field(name='ERROR', value="Please enter a valid user\n`!save server <user>`\n\nExample:\n`!save server dummy#1234`")
     elif change == "prefix":
