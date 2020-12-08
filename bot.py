@@ -90,7 +90,6 @@ async def save(ctx, change=None, val=None):
         except commands.UserNotFound:
             save_embed.add_field(name='ERROR', value="Please enter a valid user\n`!save server <user>`\n\nExample:\n`!save server dummy#1234`")
     elif change == "prefix":
-        print("pre")
         return #must add implemetation
     else:
         save_embed.add_field(name='ERROR', value="Please enter a valid syntax\n`!save <type>...`")
