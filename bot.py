@@ -81,15 +81,34 @@ async def help(ctx, args=None):
 @commands.cooldown(1, 5, commands.BucketType.guild)
 @has_permissions(administrator=True)
 async def save(ctx, change=None, val=None):
+
+    # get guild in db
+    gid = ctx.message.guild.id
+    print(gid)
+    c.execute("SELECT * FROM main WHERE guild_id=:guild_id", {'guild_id': gid})
+    print(c.fetchone())
+    if c.fetchone() == None:
+        c.execute("INSERT INTO main VALUES (:guild_id)",    {'guild_id': gid})
+        conn.commit()
+        c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
+        print(f"added guild {gid} to database")
+
+
+
     save_embed = discord.Embed(title="Settings:", color = 0x8a3f0a)
     if change == "server":
         try:
             raw = val
             uid = (await commands.UserConverter().convert(ctx, val)).id
             save_embed.add_field(name='Success!', value=f"The BeamMP server owner for this guild has been set to:\n{raw}\nid: {uid}\n\nIf this is not the correct user then simply run the command again. Remember that users are caps sensitive.")
+
+            # must update guild in db
+
         except commands.UserNotFound:
             save_embed.add_field(name='ERROR', value="Please enter a valid user\n`!save server <user>`\n\nExample:\n`!save server dummy#1234`")
     elif change == "prefix":
+        return #must add implemetation
+    elif change == "info":
         return #must add implemetation
     else:
         save_embed.add_field(name='ERROR', value="Please enter a valid syntax\n`!save <type>...`")
