@@ -16,20 +16,19 @@ bot = commands.Bot(command_prefix='!', description="The bot for all your BeamMP 
 print("Bot is starting...")
 
 
+conn = sqlite3.connect("main.db")
+c = conn.cursor()
+c.execute('''CREATE TABLE IF NOT EXISTS main (
+        guild_id integer,
+        owner_id integer,
+        prefix text
+    )''')
 
+conn.commit()
 
 
 @bot.event
 async def on_ready():
-    conn = sqlite3.connect("main.db")
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS main (
-            guild_id integer,
-            owner_id integer,
-            prefix text
-        )''')
-
-    conn.commit()
 
 
     print('\n\nLogged in as')
@@ -84,13 +83,13 @@ async def save(ctx, change=None, val=None):
 
     # get guild in db
     gid = ctx.message.guild.id
-    print(gid)
-    c.execute("SELECT * FROM main WHERE guild_id=:guild_id", {'guild_id': gid})
-    print(c.fetchone())
-    if c.fetchone() == None:
-        c.execute("INSERT INTO main VALUES (:guild_id)",    {'guild_id': gid})
+    print(f"contacted guild {gid}")
+    c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
+    print(f"Current db row: {c.fetchone()}")
+    if c.fetchone() is None:
+        c.execute("INSERT INTO main (guild_id) VALUES (?)", (gid,))
         conn.commit()
-        c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
+        c.execute("SELECT * FROM main WHERE guild_id=?", gid)
         print(f"added guild {gid} to database")
 
 
