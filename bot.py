@@ -85,12 +85,13 @@ async def save(ctx, change=None, val=None):
     gid = ctx.message.guild.id
     print(f"contacted guild {gid}")
     c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
-    print(f"Current db row: {c.fetchone()}")
     if c.fetchone() is None:
         c.execute("INSERT INTO main (guild_id) VALUES (?)", (gid,))
         conn.commit()
-        c.execute("SELECT * FROM main WHERE guild_id=?", gid)
+        c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
         print(f"added guild {gid} to database")
+    else:
+        print(f"{gid} was found in db")
 
 
 
