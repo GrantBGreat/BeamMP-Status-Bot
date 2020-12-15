@@ -2,6 +2,7 @@ import os
 import random
 import discord
 import sqlite3
+import pandas as pd
 
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -34,7 +35,7 @@ async def on_ready():
     print('\n\nLogged in as')
     print(bot.user.name)
     print(bot.user.id)
-    print('-------------------')
+    print('-------------------\n')
 
 #########################################COMMANDS#####################################################################
 
@@ -102,19 +103,31 @@ async def save(ctx, change=None, val=None):
             uid = (await commands.UserConverter().convert(ctx, val)).id
             save_embed.add_field(name='Success!', value=f"The BeamMP server owner for this guild has been set to:\n{raw}\nid: {uid}\n\nIf this is not the correct user then simply run the command again. Remember that users are caps sensitive.")
 
-            # must update guild in db
+            # add uid to db:
+            c.execute("UPDATE main SET owner_id = ? WHERE guild_id = ?", (uid, gid))
+            print(f"Set server owner to {uid} for guild {gid}\n")
 
         except commands.UserNotFound:
             save_embed.add_field(name='ERROR', value="Please enter a valid user\n`!save server <user>`\n\nExample:\n`!save server dummy#1234`")
     elif change == "prefix":
-        return #must add implemetation
-    elif change == "info":
-        return #must add implemetation
-    else:
-        save_embed.add_field(name='ERROR', value="Please enter a valid syntax\n`!save <type>...`")
+        save_embed.add_field(name='Success!', value=f"The prefix for this guild has been set to:  `{val}`")
 
+        # add prefix to db:
+        c.execute("UPDATE main SET prefix = ? WHERE guild_id = ?", (val, gid))
+
+    elif change == "info":
+        save_embed.add_field(name='Information for this Guild:', value="unfinished.")
+    else:
+        save_embed.add_field(name='ERROR', value="Please enter a valid syntax\n`!save <type>...`\n\nFor more info, do !help")
+    
+    conn.commit()
     await ctx.send(embed=save_embed)
 
+
+########################################GLOBAL-FUNCTIONS##############################################################
+
+def getPrefix():
+    return
 
 ########################################CATCH-ERRORS##################################################################
 
