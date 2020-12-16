@@ -2,7 +2,6 @@ import os
 import random
 import discord
 import sqlite3
-import pandas as pd
 
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -84,7 +83,7 @@ async def save(ctx, change=None, val=None):
 
     # get guild in db
     gid = ctx.message.guild.id
-    print(f"contacted guild {gid}")
+    print(f"contacted guild {gid}:")
     c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
     if c.fetchone() is None:
         c.execute("INSERT INTO main (guild_id) VALUES (?)", (gid,))
@@ -92,7 +91,7 @@ async def save(ctx, change=None, val=None):
         c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
         print(f"added guild {gid} to database")
     else:
-        print(f"{gid} was found in db")
+        print(f"guild {gid} was found in db")
 
 
 
@@ -109,16 +108,42 @@ async def save(ctx, change=None, val=None):
 
         except commands.UserNotFound:
             save_embed.add_field(name='ERROR', value="Please enter a valid user\n`!save server <user>`\n\nExample:\n`!save server dummy#1234`")
+
     elif change == "prefix":
         save_embed.add_field(name='Success!', value=f"The prefix for this guild has been set to:  `{val}`")
 
         # add prefix to db:
         c.execute("UPDATE main SET prefix = ? WHERE guild_id = ?", (val, gid))
+        print(f"Set prefix to \"{val}\" for guild {gid}\n")
 
     elif change == "info":
-        save_embed.add_field(name='Information for this Guild:', value="unfinished.")
+        # save_embed.add_field(name='Information for this Guild:', value="unfinished command.")
+
+        try:
+            c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
+            records = c.fetchone()
+            content = "Guild id: " + result[0] + "\n"
+            print(f"Printing information into guild {gid}\n")
+
+            # create embed:
+            if records[1] is None:
+                content += "id of BeamMP server owner: Not Set\n"
+            else:
+                content += "id of BeamMP server owner: " + result[1] + "\n"
+
+            if records[2] is None
+                content += "Server is using default prefix: `!`"
+            else:
+                content += "Prefix: " + result[2]
+            
+            save_embed.add_field(name='Information for this Guild:', value=content)
+            
+
+        except sqlite3.Error as error:
+            print(f"Failed to read data from sqlite table for guild {gid}", error)
+
     else:
-        save_embed.add_field(name='ERROR', value="Please enter a valid syntax\n`!save <type>...`\n\nFor more info, do !help")
+        save_embed.add_field(name='ERROR', value="Please enter a valid syntax\n`!save <type>...`\n\nFor more info, do \"!help save\"")
     
     conn.commit()
     await ctx.send(embed=save_embed)
@@ -126,8 +151,9 @@ async def save(ctx, change=None, val=None):
 
 ########################################GLOBAL-FUNCTIONS##############################################################
 
+# A method that can be run to get the prefix for a guild
 def getPrefix():
-    return
+    return "!"
 
 ########################################CATCH-ERRORS##################################################################
 
