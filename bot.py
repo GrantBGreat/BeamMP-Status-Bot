@@ -30,6 +30,8 @@ conn.commit()
 @bot.event
 async def on_ready():
 
+    # Set bot status:
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="!help"))
 
     print('\n\nLogged in as')
     print(bot.user.name)
