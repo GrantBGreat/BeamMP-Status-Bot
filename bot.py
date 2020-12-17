@@ -89,7 +89,6 @@ async def save(ctx, change=None, val=None):
     c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
     if c.fetchone() is None:
         c.execute("INSERT INTO main (guild_id) VALUES (?)", (gid,))
-        conn.commit()
         c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
         print(f"added guild {gid} to database")
     else:
@@ -168,6 +167,12 @@ async def check(ctx):
     gid = ctx.message.guild.id
     print(f"contacted guild {gid}:")
     c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
+
+    if c.fetchone() is None:
+        c.execute("INSERT INTO main (guild_id) VALUES (?)", (gid,))
+        c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
+        print(f"added guild {gid} to database")
+
     result = c.fetchone()
     oid = result[1]
 
@@ -178,9 +183,14 @@ async def check(ctx):
     else:
         print(f"guild {gid} and server owner {oid} were found in the db")
 
+    # contact the beammp server here
+
+    conn.commit()
+    await ctx.send(embed=check_embed)
 
 
-@bot.command(name='Support', description="sends a link to the support server")
+
+@bot.command(name='support', description="Sends a link to the support server")
 @commands.cooldown(1, 15, commands.BucketType.guild)
 async def support(ctx):
     invite_embed = discord.Embed(title="Join the Support Server!", color = 0x8a3f0a, url='https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO') # fix link after Support server is created
