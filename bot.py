@@ -186,7 +186,7 @@ async def support(ctx):
     invite_embed = discord.Embed(title="Join the Support Server!", color = 0x8a3f0a, url='https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO') # fix link after Support server is created
     await ctx.send(embed = invite_embed)
     gid = ctx.message.guild.id
-    print(f"Sent support server invite to guild {gid}")
+    print(f"Sent support server invite to guild {gid}\n")
 
 
 
