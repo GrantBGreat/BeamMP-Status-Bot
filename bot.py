@@ -111,12 +111,14 @@ async def save(ctx, change=None, val=None):
         except commands.UserNotFound:
             save_embed.add_field(name='ERROR', value="Please enter a valid user\n`!save server <user>`\n\nExample:\n`!save server dummy#1234`")
 
+
     elif change == "prefix":
         save_embed.add_field(name='Success!', value=f"The prefix for this guild has been set to:  `{val}`")
 
         # add prefix to db:
         c.execute("UPDATE main SET prefix = ? WHERE guild_id = ?", (val, gid))
         print(f"Set prefix to \"{val}\" for guild {gid}\n")
+
 
     elif change == "info":
         # save_embed.add_field(name='Information for this Guild:', value="unfinished command.")
@@ -146,12 +148,36 @@ async def save(ctx, change=None, val=None):
             print(f"Failed to read data from sqlite table for guild {gid}", error)
             save_embed.add_field(name='ERROR', value='There was a problem contatcting the database, if you are seeing this message then please notify GrantBGreat#1165 on discord via the support server.')
 
+
     else:
         save_embed.add_field(name='ERROR', value="Please enter a valid syntax\n`!save <type>...`\n\nFor more info, do \"!help save\"")
         print("No syntax was given.\n")
     
     conn.commit()
     await ctx.send(embed=save_embed)
+
+
+
+@bot.command(name = "check", description = "Checks the status of the BeamMP server set for this guild.", pass_context=True)
+@commands.cooldown(1, 5, commands.BucketType.guild)
+async def check(ctx):
+    
+    check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+
+    # get guild in db
+    gid = ctx.message.guild.id
+    print(f"contacted guild {gid}:")
+    c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
+    result = c.fetchone()
+    oid = result[1]
+
+    if oid is None:
+        check_embed.add_field(name="ERROR", value="No Server has been set for this guild.\n\nTo set the server have an admin run the `!save server` command.")
+        await ctx.send(embed=check_embed)
+        return
+    else:
+        print(f"guild {gid} was found in db")
+
 
 
 ########################################GLOBAL-FUNCTIONS##############################################################
