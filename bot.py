@@ -183,7 +183,8 @@ async def check(ctx):
 @bot.command(name='Support', description="sends a link to the support server")
 @commands.cooldown(1, 15, commands.BucketType.guild)
 async def support(ctx):
-    sendInvite()
+    invite_embed = discord.Embed(title="Join the Support Server!", color = 0x8a3f0a, url='https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO') # fix link after Support server is created
+    await ctx.send(embed = invite_embed)
     gid = ctx.message.guild.id
     print(f"Sent support server invite to guild {gid}")
 
@@ -195,12 +196,11 @@ async def support(ctx):
 def getPrefix(ctx):
     return "!" # must add implementation
 
-async def sendInvite():
+def sendInvite():
     invite_embed = discord.Embed(title="Invite:", color = 0x8a3f0a, url='https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO') # fix link after Support server is created
-    await ctx.send(invite_embed)
+    return ctx.send(invite_embed)
 
 ########################################CATCH-ERRORS##################################################################
-
 
 @save.error
 async def save_error(ctx, error):
