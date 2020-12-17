@@ -176,15 +176,28 @@ async def check(ctx):
         await ctx.send(embed=check_embed)
         return
     else:
-        print(f"guild {gid} was found in db")
+        print(f"guild {gid} and server owner {oid} were found in the db")
+
+
+
+@bot.command(name='Support', description="sends a link to the support server")
+@commands.cooldown(1, 15, commands.BucketType.guild)
+async def support(ctx):
+    sendInvite()
+    gid = ctx.message.guild.id
+    print(f"Sent support server invite to guild {gid}")
 
 
 
 ########################################GLOBAL-FUNCTIONS##############################################################
 
 # A method that can be run to get the prefix for a guild
-def getPrefix():
+def getPrefix(ctx):
     return "!" # must add implementation
+
+async def sendInvite():
+    invite_embed = discord.Embed(title="Invite:", color = 0x8a3f0a, url='https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO') # fix link after Support server is created
+    await ctx.send(invite_embed)
 
 ########################################CATCH-ERRORS##################################################################
 
@@ -203,4 +216,5 @@ async def on_command_error(ctx, error):
         error_embed.add_field(name='Command on Cooldown:', value="Please retry in %s seconds" % int(error.retry_after))
         await ctx.send(embed=error_embed)
 
+bot.load_extension('cogs.CommandEvents')
 bot.run(TOKEN)
