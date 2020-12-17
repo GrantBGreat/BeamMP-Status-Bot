@@ -124,28 +124,31 @@ async def save(ctx, change=None, val=None):
         try:
             c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
             result = c.fetchone()
-            content = "Guild id: " + result[0] + "\n"
+            content = f"Guild id: `{result[0]}`\n"
             print(f"Printing information into guild {gid}\n")
+            
 
             # create embed:
-            if records[1] is None:
-                content += "id of BeamMP server owner: Not Set\n"
+            if result[1] is None:
+                content += "id of BeamMP server owner: `Not Set`\n"
             else:
-                content += "id of BeamMP server owner: " + result[1] + "\n"
+                content += f"id of BeamMP server owner: `{result[1]}`\n"
 
-            if records[2] is None:
+            if result[2] is None:
                 content += "Server is using default prefix: `!`"
             else:
-                content += "Prefix: " + result[2]
+                content += f"Prefix: `{result[2]}`"
             
             save_embed.add_field(name='Information for this Guild:', value=content)
             
 
         except sqlite3.Error as error:
             print(f"Failed to read data from sqlite table for guild {gid}", error)
+            save_embed.add_field(name='ERROR', value='There was a problem contatcting the database, if you are seeing this message then please notify GrantBGreat#1165 on discord via the support server.')
 
     else:
         save_embed.add_field(name='ERROR', value="Please enter a valid syntax\n`!save <type>...`\n\nFor more info, do \"!help save\"")
+        print("No syntax was given.\n")
     
     conn.commit()
     await ctx.send(embed=save_embed)
@@ -155,7 +158,7 @@ async def save(ctx, change=None, val=None):
 
 # A method that can be run to get the prefix for a guild
 def getPrefix():
-    return "!"
+    return "!" # must add implementation
 
 ########################################CATCH-ERRORS##################################################################
 
