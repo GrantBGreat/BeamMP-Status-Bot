@@ -121,7 +121,7 @@ async def save(ctx, change=None, val=None):
 
         try:
             c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
-            records = c.fetchone()
+            result = c.fetchone()
             content = "Guild id: " + result[0] + "\n"
             print(f"Printing information into guild {gid}\n")
 
@@ -131,7 +131,7 @@ async def save(ctx, change=None, val=None):
             else:
                 content += "id of BeamMP server owner: " + result[1] + "\n"
 
-            if records[2] is None
+            if records[2] is None:
                 content += "Server is using default prefix: `!`"
             else:
                 content += "Prefix: " + result[2]
