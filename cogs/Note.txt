@@ -1,0 +1,1 @@
+Cogs are not yet being used in this bot, but they will be implemented in future versions.

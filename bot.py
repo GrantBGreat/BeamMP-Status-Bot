@@ -216,5 +216,4 @@ async def on_command_error(ctx, error):
         error_embed.add_field(name='Command on Cooldown:', value="Please retry in %s seconds" % int(error.retry_after))
         await ctx.send(embed=error_embed)
 
-bot.load_extension('cogs.CommandEvents')
 bot.run(TOKEN)
