@@ -198,7 +198,6 @@ async def status(ctx, val):
 
 
 
-
 @bot.command(name='support', description="Sends a link to the support server")
 @commands.cooldown(1, 15, commands.BucketType.guild)
 async def support(ctx):
