@@ -203,7 +203,7 @@ async def support(ctx):
 # A method that can be run to get the prefix for a guild	
 def getPrefix(ctx):	
     gid = ctx.message.guild.id	
-    c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))	
+    c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
     # check if there is a prefix:	
     if c.fetchone() is None:	
         return "!" # The default prefix	
