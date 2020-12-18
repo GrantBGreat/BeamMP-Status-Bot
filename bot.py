@@ -198,6 +198,23 @@ async def support(ctx):
     gid = ctx.message.guild.id
     print(f"Sent support server invite to guild {gid}\n")
 
+########################################GLOBAL-FUNCTIONS##############################################################	
+
+# A method that can be run to get the prefix for a guild	
+def getPrefix(ctx):	
+    gid = ctx.message.guild.id	
+    c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))	
+    # check if there is a prefix:	
+    if c.fetchone() is None:	
+        return "!" # The default prefix	
+    else:	
+        guild = c.fetchone()	
+        return guild[2]	
+
+def sendInvite():	
+    invite_embed = discord.Embed(title="Invite:", color = 0x8a3f0a, url='https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO') # fix link after Support server is created	
+    ctx.send(invite_embed)	
+
 ########################################CATCH-ERRORS##################################################################
 
 @save.error
