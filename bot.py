@@ -157,7 +157,7 @@ async def save(ctx, change=None, val=None):
 
 
 
-@bot.command(name = "check", description = "Checks the status of the BeamMP server set for this guild.", pass_context=True)
+@bot.command(name = "check", description = "Checks the status of the BeamMP server(s) set for this guild.", pass_context=True)
 @commands.cooldown(1, 5, commands.BucketType.guild)
 async def check(ctx):
     
@@ -177,7 +177,7 @@ async def check(ctx):
     oid = result[1]
 
     if oid is None:
-        check_embed.add_field(name="ERROR", value="No Server has been set for this guild.\n\nTo set the server have an admin run the `!save server` command.")
+        check_embed.add_field(name="ERROR", value="No Server has been set for this guild.\n\nTo set the server have an admin run the `!save server` command.\nYou can also do the `!status <user>` command to get the status of servers run by a user")
         await ctx.send(embed=check_embed)
         return
     else:
@@ -190,13 +190,32 @@ async def check(ctx):
 
 
 
+@bot.command(name = "status", description = "Checks the status of the BeamMP server(s) associated with the user provided.", pass_context=True)
+@commands.cooldown(1, 5, commands.BucketType.guild)
+async def status(ctx, val):
+    uid = (await commands.UserConverter().convert(ctx, val))
+    return
+
+
+
+
 @bot.command(name='support', description="Sends a link to the support server")
 @commands.cooldown(1, 15, commands.BucketType.guild)
 async def support(ctx):
-    invite_embed = discord.Embed(title="Join the Support Server!", color = 0x8a3f0a, url='https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO') # fix link after Support server is created
-    await ctx.send(embed = invite_embed)
+    support_embed = discord.Embed(title="Join the Support Server!", color = 0x8a3f0a, url='https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO') # fix link after Support server is created
+    await ctx.send(embed = support_embed)
     gid = ctx.message.guild.id
     print(f"Sent support server invite to guild {gid}\n")
+
+
+
+@bot.command(name='invite', description="Sends a link to invite the bot")
+@commands.cooldown(1, 15, commands.BucketType.guild)
+async def invite(ctx):
+    invite_embed = discord.Embed(title='Invite the bot!', color = 0x8a3f0a, url='https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO') # fix link once bot is created
+    await ctx.send(embed = invite_embed)
+    gid = ctx.message.guild.id
+    print(f"Sent bot invite to guild {gid}\n")
 
 ########################################GLOBAL-FUNCTIONS##############################################################	
 
