@@ -215,7 +215,7 @@ async def status(ctx, val=None):
 @bot.command(name='support', description="Sends a link to the support server")
 @commands.cooldown(1, 15, commands.BucketType.guild)
 async def support(ctx):
-    support_embed = discord.Embed(title="Join the Support Server!", color = 0x8a3f0a, url='https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO') # fix link after Support server is created
+    support_embed = discord.Embed(title="Join the Support Server!", color = 0x8a3f0a, url='https://discord.gg/rcb34FPvBB') # fix link after Support server is created
     await ctx.send(embed = support_embed)
     gid = ctx.message.guild.id
     print(f"Sent support server invite to guild {gid}\n")
