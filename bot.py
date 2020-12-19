@@ -2,6 +2,8 @@ import os
 import random
 import discord
 import sqlite3
+import urllib.request
+import json
 
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -192,7 +194,15 @@ async def check(ctx):
     username = bot.get_user(oid)
     print(f"Finding servers for user {username} in {gid}\n")
 
-    # contact the beammp server here
+    req = urllib.request.Request('https://beammp.com/servers-info')
+    req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36')
+    data = urllib.request.urlopen(req)
+    result = data.read()
+    result = result.decode('utf-8')
+    
+    # result is the beamMP JSON database.
+
+    
 
     conn.commit()
     await ctx.send(embed=check_embed)
@@ -203,12 +213,35 @@ async def check(ctx):
 @commands.cooldown(1, 5, commands.BucketType.guild)
 async def status(ctx, val=None):
     gid = ctx.message.guild.id
-    username = (await commands.UserConverter().convert(ctx, val))
+    status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+    
+    if val is None:
+        status_embed.add_field(name='ERROR', description='No user specifyed.\nCorrect syntax: `!status <user>`')
+        await ctx.send(embed=status_embed)
+        return
+
+    print("Checking if user is valid...")
+    username = ''
+    try:
+        username = (await commands.UserConverter().convert(ctx, val))
+    except commands.UserNotFound:
+        status_embed.add_field(name='ERROR', value="Please enter a valid user\n`!status <user>`\n\nExample:\n`!status dummy#1234`\n\nRemember, users are capital sensitive!")
+        await ctx.send(embed=status_embed)
+        return
+
     print(f"Finding servers for user {username} in {gid}\n")
 
-    # contact the beammp server here
+    req = urllib.request.Request('https://beammp.com/servers-info')
+    req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36')
+    data = urllib.request.urlopen(req)
+    result = data.read()
+    result = result.decode('utf-8')
     
-    return
+    # result is the beamMP JSON database.
+
+
+
+    await ctx.send(embed=status_embed)
 
 
 
