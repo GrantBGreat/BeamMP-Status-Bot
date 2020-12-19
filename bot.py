@@ -172,16 +172,25 @@ async def check(ctx):
         c.execute("INSERT INTO main (guild_id) VALUES (?)", (gid,))
         c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
         print(f"added guild {gid} to database")
+    else:
+        print(f"guild {gid} was found in db")
 
+    print("checking if a user has been set for the guild")
+    c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
     result = c.fetchone()
-    oid = result[1]
 
-    if oid is None:
+    if result[1] is None:
         check_embed.add_field(name="ERROR", value="No Server has been set for this guild.\n\nTo set the server have an admin run the `!save server` command.\nYou can also do the `!status <user>` command to get the status of servers run by a user")
         await ctx.send(embed=check_embed)
         return
     else:
+        oid = result[1]
         print(f"guild {gid} and server owner {oid} were found in the db")
+    
+    oid = result[1]
+
+    username = bot.get_user(oid)
+    print(f"Finding servers for user {username} in {gid}\n")
 
     # contact the beammp server here
 
@@ -192,8 +201,13 @@ async def check(ctx):
 
 @bot.command(name = "status", description = "Checks the status of the BeamMP server(s) associated with the user provided.", pass_context=True)
 @commands.cooldown(1, 5, commands.BucketType.guild)
-async def status(ctx, val):
-    uid = (await commands.UserConverter().convert(ctx, val))
+async def status(ctx, val=None):
+    gid = ctx.message.guild.id
+    username = (await commands.UserConverter().convert(ctx, val))
+    print(f"Finding servers for user {username} in {gid}\n")
+
+    # contact the beammp server here
+    
     return
 
 
@@ -211,7 +225,7 @@ async def support(ctx):
 @bot.command(name='invite', description="Sends a link to invite the bot")
 @commands.cooldown(1, 15, commands.BucketType.guild)
 async def invite(ctx):
-    invite_embed = discord.Embed(title='Invite the bot!', color = 0x8a3f0a, url='https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO') # fix link once bot is created
+    invite_embed = discord.Embed(title='Invite the bot!', color = 0x8a3f0a, url='https://discord.com/api/oauth2/authorize?client_id=784631695902375956&permissions=0&scope=bot') # fix link once bot is created
     await ctx.send(embed = invite_embed)
     gid = ctx.message.guild.id
     print(f"Sent bot invite to guild {gid}\n")
