@@ -80,8 +80,8 @@ async def help(ctx, args=None):
 
 
 
-@bot.command(name = "save", description = "Can be run by admins only.\n\nThis command sets the server that can be reached by doing the `!check` command\n\n**Impemetations:**\n`!save server <user>`\n`!save prefix <prefix>`", pass_context=True)
-@commands.cooldown(1, 5, commands.BucketType.guild)
+@bot.command(name = "save", description = "Can be run by admins only.\n\nThis command sets the server that can be reached by doing the `!check` command\n\n**Impemetations:**\n`!save server <user>`\n`!save info`", pass_context=True)
+@commands.cooldown(1, 10, commands.BucketType.guild)
 @has_permissions(administrator=True)
 async def save(ctx, change=None, val=None):
 
@@ -113,14 +113,6 @@ async def save(ctx, change=None, val=None):
             save_embed.add_field(name='ERROR', value="Please enter a valid user\n`!save server <user>`\n\nExample:\n`!save server dummy#1234`")
 
 
-    elif change == "prefix":
-        save_embed.add_field(name='Success!', value=f"The prefix for this guild has been set to:  `{val}`")
-
-        # add prefix to db:
-        c.execute("UPDATE main SET prefix = ? WHERE guild_id = ?", (val, gid))
-        print(f"Set prefix to \"{val}\" for guild {gid}\n")
-
-
     elif change == "info":
         # save_embed.add_field(name='Information for this Guild:', value="unfinished command.")
 
@@ -136,11 +128,6 @@ async def save(ctx, change=None, val=None):
                 content += "id of BeamMP server owner: `Not Set`\n"
             else:
                 content += f"id of BeamMP server owner: `{result[1]}`\n"
-
-            if result[2] is None:
-                content += "Server is using default prefix: `!`"
-            else:
-                content += f"Prefix: `{result[2]}`"
             
             save_embed.add_field(name='Information for this Guild:', value=content)
             
@@ -191,7 +178,7 @@ async def check(ctx):
     
     oid = result[1]
 
-    username = bot.get_user(oid)
+    username = await bot.fetch_user(oid)
 
     print(f"Finding servers for user {username} in {gid}")
 
@@ -305,11 +292,10 @@ async def status(ctx, val=None):
         return
 
 
-
 @bot.command(name='support', description="Sends a link to the support server")
 @commands.cooldown(1, 15, commands.BucketType.guild)
 async def support(ctx):
-    support_embed = discord.Embed(title="Join the Support Server!", color = 0x8a3f0a, url='https://discord.gg/rcb34FPvBB') # fix link after Support server is created
+    support_embed = discord.Embed(title="Join the Support Server!", color = 0x8a3f0a, url='https://discord.gg/rcb34FPvBB') # link to support server
     await ctx.send(embed = support_embed)
     gid = ctx.message.guild.id
     print(f"Sent support server invite to guild {gid}\n")
@@ -319,27 +305,10 @@ async def support(ctx):
 @bot.command(name='invite', description="Sends a link to invite the bot")
 @commands.cooldown(1, 15, commands.BucketType.guild)
 async def invite(ctx):
-    invite_embed = discord.Embed(title='Invite the bot!', color = 0x8a3f0a, url='https://discord.com/api/oauth2/authorize?client_id=784631695902375956&permissions=0&scope=bot') # fix link once bot is created
+    invite_embed = discord.Embed(title='Invite the bot!', color = 0x8a3f0a, url='https://discord.com/api/oauth2/authorize?client_id=784631695902375956&permissions=0&scope=bot') # link to invite bot.
     await ctx.send(embed = invite_embed)
     gid = ctx.message.guild.id
     print(f"Sent bot invite to guild {gid}\n")
-
-########################################GLOBAL-FUNCTIONS##############################################################	
-
-# A method that can be run to get the prefix for a guild	
-def getPrefix(ctx):	
-    gid = ctx.message.guild.id	
-    c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
-    # check if there is a prefix:	
-    if c.fetchone() is None:	
-        return "!" # The default prefix	
-    else:	
-        guild = c.fetchone()	
-        return guild[2]	
-
-def sendInvite():	
-    invite_embed = discord.Embed(title="Invite:", color = 0x8a3f0a, url='https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO') # fix link after Support server is created	
-    ctx.send(invite_embed)	
 
 ########################################CATCH-ERRORS##################################################################
 
