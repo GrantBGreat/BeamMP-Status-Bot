@@ -2,6 +2,8 @@ import os
 import random
 import discord
 import sqlite3
+import urllib.request
+import json
 
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -157,11 +159,9 @@ async def save(ctx, change=None, val=None):
 
 
 
-@bot.command(name = "check", description = "Checks the status of the BeamMP server set for this guild.", pass_context=True)
-@commands.cooldown(1, 5, commands.BucketType.guild)
+@bot.command(name = "check", description = "Checks the status of the BeamMP server(s) set for this guild.", pass_context=True)
+@commands.cooldown(1, 10, commands.BucketType.guild)
 async def check(ctx):
-    
-    check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
 
     # get guild in db
     gid = ctx.message.guild.id
@@ -170,33 +170,176 @@ async def check(ctx):
 
     if c.fetchone() is None:
         c.execute("INSERT INTO main (guild_id) VALUES (?)", (gid,))
+        conn.commit()
         c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
         print(f"added guild {gid} to database")
+    else:
+        print(f"guild {gid} was found in db")
 
+    print("checking if a user has been set for the guild")
+    c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
     result = c.fetchone()
-    oid = result[1]
 
-    if oid is None:
-        check_embed.add_field(name="ERROR", value="No Server has been set for this guild.\n\nTo set the server have an admin run the `!save server` command.")
+    if result[1] is None:
+        check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+        check_embed.add_field(name="ERROR", value="No Server has been set for this guild.\n\nTo set the server have an admin run the `!save server` command.\nYou can also do the `!status <user>` command to get the status of servers run by a user")
         await ctx.send(embed=check_embed)
         return
     else:
+        oid = result[1]
         print(f"guild {gid} and server owner {oid} were found in the db")
+    
+    oid = result[1]
 
-    # contact the beammp server here
+    username = bot.get_user(oid)
 
-    conn.commit()
-    await ctx.send(embed=check_embed)
+    print(f"Finding servers for user {username} in {gid}")
+
+    req = urllib.request.Request('https://beammp.com/servers-info')
+    req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36')
+    data = urllib.request.urlopen(req)
+    result = data.read()
+    result = result.decode('utf-8')
+    dictionary = json.loads(result)
+
+    print(f"Sending server information to {gid} for:")
+    times = 0
+    name = ''
+    players = ''
+    max_players = ''
+    mods_total = ''
+    try:
+        for d in dictionary:
+            for key, value in d.items():
+                if isinstance(value, dict) and 'owner' in value and value['owner'] == str(username):
+                    times += 1
+                    raw_name = value['sname']
+                    players = value['players']
+                    max_players = value['maxplayers']
+                    mods_total = value['modstotal']
+
+                    # remove name decorators:
+                    name = ''.join([raw_name[i] for i in range(len(raw_name)) if raw_name[i] != '^' and (i == 0 or raw_name[i-1] != '^')])
+                    
+                    check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+                    check_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers: {players} / {max_players}")
+                    await ctx.send(embed=check_embed)
+        print('\n')
+
+    except Exception as e:
+        print(f"ERROR: {e}\n")
+
+    if times == 0:
+        check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+        check_embed.add_field(name='ERROR', value='No servers found owned by the given user')
+        await ctx.send(embed=check_embed)
+        return
+
+
+
+@bot.command(name = "status", description = "Checks the status of the BeamMP server(s) associated with the user provided.", pass_context=True)
+@commands.cooldown(1, 10, commands.BucketType.guild)
+async def status(ctx, val=None):
+    gid = ctx.message.guild.id
+    print(f"running status command in guild {gid}")
+
+    print('checking if a user was provided...')
+    if val is None:
+        print("no user provided\n")
+        status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+        status_embed.add_field(name='ERROR', value='No user specifyed.\nCorrect syntax: `!status <user>`')
+        await ctx.send(embed=status_embed)
+        return
+
+    print("Checking if user is valid...")
+    username = ''
+    try:
+        username = (await commands.UserConverter().convert(ctx, val))
+    except commands.UserNotFound:
+        print("User not found error\n")
+        status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+        status_embed.add_field(name='ERROR', value="Please enter a valid user\n`!status <user>`\n\nExample:\n`!status dummy#1234`\n\nRemember, users are capital sensitive!")
+        await ctx.send(embed=status_embed)
+        return
+
+    print(f"Finding servers for user {username} in {gid}")
+
+    req = urllib.request.Request('https://beammp.com/servers-info')
+    req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36')
+    data = urllib.request.urlopen(req)
+    result = data.read()
+    result = result.decode('utf-8')
+    dictionary = json.loads(result)
+
+    print(f"Sending server information to {gid} for:")
+    times = 0
+    name = ''
+    players = ''
+    max_players = ''
+    mods_total = ''
+    try:
+        for d in dictionary:
+            for key, value in d.items():
+                if isinstance(value, dict) and 'owner' in value and value['owner'] == str(username):
+                    times += 1
+                    raw_name = value['sname']
+                    players = value['players']
+                    max_players = value['maxplayers']
+                    mods_total = value['modstotal']
+
+                    # remove name decorators:
+                    name = ''.join([raw_name[i] for i in range(len(raw_name)) if raw_name[i] != '^' and (i == 0 or raw_name[i-1] != '^')])
+                    
+                    status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+                    status_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers: {players} / {max_players}")
+                    await ctx.send(embed=status_embed)
+        print('\n')
+
+    except Exception as e:
+        print(f"ERROR: {e}\n")
+
+    if times == 0:
+        status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+        status_embed.add_field(name='ERROR', value='No servers found owned by the given user')
+        await ctx.send(embed=status_embed)
+        return
 
 
 
 @bot.command(name='support', description="Sends a link to the support server")
 @commands.cooldown(1, 15, commands.BucketType.guild)
 async def support(ctx):
-    invite_embed = discord.Embed(title="Join the Support Server!", color = 0x8a3f0a, url='https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO') # fix link after Support server is created
-    await ctx.send(embed = invite_embed)
+    support_embed = discord.Embed(title="Join the Support Server!", color = 0x8a3f0a, url='https://discord.gg/rcb34FPvBB') # fix link after Support server is created
+    await ctx.send(embed = support_embed)
     gid = ctx.message.guild.id
     print(f"Sent support server invite to guild {gid}\n")
+
+
+
+@bot.command(name='invite', description="Sends a link to invite the bot")
+@commands.cooldown(1, 15, commands.BucketType.guild)
+async def invite(ctx):
+    invite_embed = discord.Embed(title='Invite the bot!', color = 0x8a3f0a, url='https://discord.com/api/oauth2/authorize?client_id=784631695902375956&permissions=0&scope=bot') # fix link once bot is created
+    await ctx.send(embed = invite_embed)
+    gid = ctx.message.guild.id
+    print(f"Sent bot invite to guild {gid}\n")
+
+########################################GLOBAL-FUNCTIONS##############################################################	
+
+# A method that can be run to get the prefix for a guild	
+def getPrefix(ctx):	
+    gid = ctx.message.guild.id	
+    c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
+    # check if there is a prefix:	
+    if c.fetchone() is None:	
+        return "!" # The default prefix	
+    else:	
+        guild = c.fetchone()	
+        return guild[2]	
+
+def sendInvite():	
+    invite_embed = discord.Embed(title="Invite:", color = 0x8a3f0a, url='https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstleyVEVO') # fix link after Support server is created	
+    ctx.send(invite_embed)	
 
 ########################################CATCH-ERRORS##################################################################
 
