@@ -214,9 +214,12 @@ async def check(ctx):
 async def status(ctx, val=None):
     gid = ctx.message.guild.id
     status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-    
+    print(f"running status command in guild {gid}")
+
+    print('checking if a user was provided...')
     if val is None:
-        status_embed.add_field(name='ERROR', description='No user specifyed.\nCorrect syntax: `!status <user>`')
+        print("no user provided\n")
+        status_embed.add_field(name='ERROR', value='No user specifyed.\nCorrect syntax: `!status <user>`')
         await ctx.send(embed=status_embed)
         return
 
@@ -225,6 +228,7 @@ async def status(ctx, val=None):
     try:
         username = (await commands.UserConverter().convert(ctx, val))
     except commands.UserNotFound:
+        print("User not found error\n")
         status_embed.add_field(name='ERROR', value="Please enter a valid user\n`!status <user>`\n\nExample:\n`!status dummy#1234`\n\nRemember, users are capital sensitive!")
         await ctx.send(embed=status_embed)
         return
@@ -239,7 +243,7 @@ async def status(ctx, val=None):
     
     # result is the beamMP JSON database.
 
-
+    dictionary = json.loads(result)
 
     await ctx.send(embed=status_embed)
 
