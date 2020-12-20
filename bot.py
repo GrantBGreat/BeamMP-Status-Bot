@@ -160,10 +160,8 @@ async def save(ctx, change=None, val=None):
 
 
 @bot.command(name = "check", description = "Checks the status of the BeamMP server(s) set for this guild.", pass_context=True)
-@commands.cooldown(1, 5, commands.BucketType.guild)
+@commands.cooldown(1, 10, commands.BucketType.guild)
 async def check(ctx):
-    
-    check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
 
     # get guild in db
     gid = ctx.message.guild.id
@@ -172,6 +170,7 @@ async def check(ctx):
 
     if c.fetchone() is None:
         c.execute("INSERT INTO main (guild_id) VALUES (?)", (gid,))
+        conn.commit()
         c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
         print(f"added guild {gid} to database")
     else:
@@ -182,6 +181,7 @@ async def check(ctx):
     result = c.fetchone()
 
     if result[1] is None:
+        check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
         check_embed.add_field(name="ERROR", value="No Server has been set for this guild.\n\nTo set the server have an admin run the `!save server` command.\nYou can also do the `!status <user>` command to get the status of servers run by a user")
         await ctx.send(embed=check_embed)
         return
@@ -192,33 +192,61 @@ async def check(ctx):
     oid = result[1]
 
     username = bot.get_user(oid)
-    print(f"Finding servers for user {username} in {gid}\n")
+
+    print(f"Finding servers for user {username} in {gid}")
 
     req = urllib.request.Request('https://beammp.com/servers-info')
     req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36')
     data = urllib.request.urlopen(req)
     result = data.read()
     result = result.decode('utf-8')
-    
-    # result is the beamMP JSON database.
+    dictionary = json.loads(result)
 
-    
+    print(f"Sending server information to {gid} for:")
+    times = 0
+    name = ''
+    players = ''
+    max_players = ''
+    mods_total = ''
+    try:
+        for d in dictionary:
+            for key, value in d.items():
+                if isinstance(value, dict) and 'owner' in value and value['owner'] == str(username):
+                    times += 1
+                    raw_name = value['sname']
+                    players = value['players']
+                    max_players = value['maxplayers']
+                    mods_total = value['modstotal']
 
-    conn.commit()
-    await ctx.send(embed=check_embed)
+                    # remove name decorators:
+                    name = ''.join([raw_name[i] for i in range(len(raw_name)) if raw_name[i] != '^' and (i == 0 or raw_name[i-1] != '^')])
+                    
+                    check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+                    check_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers: {players} / {max_players}")
+                    await ctx.send(embed=check_embed)
+        print('\n')
+
+    except Exception as e:
+        print(f"ERROR: {e}\n")
+
+    if times == 0:
+        check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+        check_embed.add_field(name='ERROR', value='No servers found owned by the given user')
+        await ctx.send(embed=check_embed)
+        return
 
 
 
 @bot.command(name = "status", description = "Checks the status of the BeamMP server(s) associated with the user provided.", pass_context=True)
-@commands.cooldown(1, 5, commands.BucketType.guild)
+@commands.cooldown(1, 10, commands.BucketType.guild)
 async def status(ctx, val=None):
     gid = ctx.message.guild.id
-    status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
     print(f"running status command in guild {gid}")
 
     print('checking if a user was provided...')
     if val is None:
         print("no user provided\n")
+        status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
         status_embed.add_field(name='ERROR', value='No user specifyed.\nCorrect syntax: `!status <user>`')
         await ctx.send(embed=status_embed)
         return
@@ -229,23 +257,52 @@ async def status(ctx, val=None):
         username = (await commands.UserConverter().convert(ctx, val))
     except commands.UserNotFound:
         print("User not found error\n")
+        status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
         status_embed.add_field(name='ERROR', value="Please enter a valid user\n`!status <user>`\n\nExample:\n`!status dummy#1234`\n\nRemember, users are capital sensitive!")
         await ctx.send(embed=status_embed)
         return
 
-    print(f"Finding servers for user {username} in {gid}\n")
+    print(f"Finding servers for user {username} in {gid}")
 
     req = urllib.request.Request('https://beammp.com/servers-info')
     req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36')
     data = urllib.request.urlopen(req)
     result = data.read()
     result = result.decode('utf-8')
-    
-    # result is the beamMP JSON database.
-
     dictionary = json.loads(result)
 
-    await ctx.send(embed=status_embed)
+    print(f"Sending server information to {gid} for:")
+    times = 0
+    name = ''
+    players = ''
+    max_players = ''
+    mods_total = ''
+    try:
+        for d in dictionary:
+            for key, value in d.items():
+                if isinstance(value, dict) and 'owner' in value and value['owner'] == str(username):
+                    times += 1
+                    raw_name = value['sname']
+                    players = value['players']
+                    max_players = value['maxplayers']
+                    mods_total = value['modstotal']
+
+                    # remove name decorators:
+                    name = ''.join([raw_name[i] for i in range(len(raw_name)) if raw_name[i] != '^' and (i == 0 or raw_name[i-1] != '^')])
+                    
+                    status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+                    status_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers: {players} / {max_players}")
+                    await ctx.send(embed=status_embed)
+        print('\n')
+
+    except Exception as e:
+        print(f"ERROR: {e}\n")
+
+    if times == 0:
+        status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+        status_embed.add_field(name='ERROR', value='No servers found owned by the given user')
+        await ctx.send(embed=status_embed)
+        return
 
 
 
