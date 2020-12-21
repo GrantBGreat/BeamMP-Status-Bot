@@ -207,7 +207,8 @@ async def check(ctx):
 
                     # remove name decorators:
                     name = ''.join([raw_name[i] for i in range(len(raw_name)) if raw_name[i] != '^' and (i == 0 or raw_name[i-1] != '^')])
-                    
+                    print(name)
+
                     check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
                     check_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers: {players} / {max_players}")
                     await ctx.send(embed=check_embed)
@@ -218,7 +219,7 @@ async def check(ctx):
 
     if times == 0:
         check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-        check_embed.add_field(name='ERROR', value='No servers found owned by the given user')
+        check_embed.add_field(name='ERROR', value='No servers found that are owned by the given user')
         await ctx.send(embed=check_embed)
         return
 
@@ -276,6 +277,7 @@ async def status(ctx, val=None):
 
                     # remove name decorators:
                     name = ''.join([raw_name[i] for i in range(len(raw_name)) if raw_name[i] != '^' and (i == 0 or raw_name[i-1] != '^')])
+                    print(name)
                     
                     status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
                     status_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers: {players} / {max_players}")
@@ -287,7 +289,7 @@ async def status(ctx, val=None):
 
     if times == 0:
         status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-        status_embed.add_field(name='ERROR', value='No servers found owned by the given user')
+        status_embed.add_field(name='ERROR', value='No servers found that are owned by the given user')
         await ctx.send(embed=status_embed)
         return
 
@@ -295,7 +297,7 @@ async def status(ctx, val=None):
 @bot.command(name='support', description="Sends a link to the support server")
 @commands.cooldown(1, 15, commands.BucketType.guild)
 async def support(ctx):
-    support_embed = discord.Embed(title="Join the Support Server!", color = 0x8a3f0a, url='https://discord.gg/rcb34FPvBB') # link to support server
+    support_embed = discord.Embed(title="Join the Support Server!", color = 0x8a3f0a, url='https://discord.gg/vhGhEsDyCf') # link to support server
     await ctx.send(embed = support_embed)
     gid = ctx.message.guild.id
     print(f"Sent support server invite to guild {gid}\n")
@@ -305,7 +307,7 @@ async def support(ctx):
 @bot.command(name='invite', description="Sends a link to invite the bot")
 @commands.cooldown(1, 15, commands.BucketType.guild)
 async def invite(ctx):
-    invite_embed = discord.Embed(title='Invite the bot!', color = 0x8a3f0a, url='https://discord.com/api/oauth2/authorize?client_id=784631695902375956&permissions=0&scope=bot') # link to invite bot.
+    invite_embed = discord.Embed(title='Invite the bot!', color = 0x8a3f0a, url='https://discord.com/api/oauth2/authorize?client_id=784631695902375956&permissions=2048&scope=bot') # link to invite bot.
     await ctx.send(embed = invite_embed)
     gid = ctx.message.guild.id
     print(f"Sent bot invite to guild {gid}\n")
