@@ -138,7 +138,7 @@ async def save(ctx, change=None, val=None):
 
 
     else:
-        save_embed.add_field(name='ERROR', value="Please enter a valid syntax\n`!save <type>...`\n\nFor more info, do \"!help save\"")
+        save_embed.add_field(name='ERROR', value="Please enter a valid syntax\n`!save <type>...`\n\nFor more info, do `!help save`")
         print("No syntax was given.\n")
     
     conn.commit()
