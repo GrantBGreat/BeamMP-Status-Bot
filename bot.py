@@ -189,6 +189,7 @@ async def check(ctx):
     result = result.decode('utf-8')
     dictionary = json.loads(result)
 
+    print(f"checking {len(dictionary)} servers...")
     print(f"Sending server information to {gid} for:")
     times = 0
     name = ''
@@ -259,6 +260,7 @@ async def status(ctx, val=None):
     result = result.decode('utf-8')
     dictionary = json.loads(result)
 
+    print(f"checking {len(dictionary)} servers...")
     print(f"Sending server information to {gid} for:")
     times = 0
     name = ''
