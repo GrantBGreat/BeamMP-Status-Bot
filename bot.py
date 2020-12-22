@@ -13,7 +13,7 @@ from discord.ext.commands import has_permissions, MissingPermissions
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-bot = commands.Bot(command_prefix='b! ', description="The bot for all your BeamMP needs.", help_command = None, case_insensitive = True)
+bot = commands.Bot(command_prefix=commands.when_mentioned_or("b! "), description="The bot for all your BeamMP needs.", help_command = None, case_insensitive = True)
 
 print("Bot is starting...")
 
@@ -45,7 +45,7 @@ async def on_ready():
 @bot.command(name="help", description = "Learn what each command does.", pass_context=True) #help command
 @commands.cooldown(1, 5, commands.BucketType.guild)
 async def help(ctx, args=None):
-    help_embed = discord.Embed(title="BeamMP Status Commands:", color = 0x8a3f0a)
+    help_embed = discord.Embed(title="Stuck? Join the Support Server!", color = 0x8a3f0a, url='https://discord.gg/vhGhEsDyCf')
     command_names_list = [i.name for i in bot.commands]
 
     # If there are no arguments, just list the commands:
@@ -57,7 +57,7 @@ async def help(ctx, args=None):
         )
         help_embed.add_field(
             name="Details",
-            value="Type `b! help <command name>` for more details about a command.",
+            value="The prefix for this bot is \"`b!`\" -- Remember the space between the prefix and command!\n\nType `b! help <command name>` for more details about a command.",
             inline=False
         )
 
