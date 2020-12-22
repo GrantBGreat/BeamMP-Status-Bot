@@ -196,6 +196,7 @@ async def check(ctx):
     players = ''
     max_players = ''
     mods_total = ''
+    player_list = ''
     try:
         for d in dictionary:
             for key, value in d.items():
@@ -205,14 +206,21 @@ async def check(ctx):
                     players = value['players']
                     max_players = value['maxplayers']
                     mods_total = value['modstotal']
+                    raw_player_list = value['playerslist']
+                    player_list = '\n'.join(list(raw_player_list.split(";")))
 
                     # remove name decorators:
                     name = ''.join([raw_name[i] for i in range(len(raw_name)) if raw_name[i] != '^' and (i == 0 or raw_name[i-1] != '^')])
                     print(name)
 
-                    check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-                    check_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers: {players} / {max_players}")
-                    await ctx.send(embed=check_embed)
+                    status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+                    if int(players) <= 4 and int(players) != 0:
+                        print('using player names')
+                        status_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers:\n{player_list}")
+                    else:
+                        print('using player count')
+                        status_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers: {players} / {max_players}")
+                    await ctx.send(embed=status_embed)
         print('\n')
 
     except Exception as e:
@@ -267,6 +275,7 @@ async def status(ctx, val=None):
     players = ''
     max_players = ''
     mods_total = ''
+    player_list = ''
     try:
         for d in dictionary:
             for key, value in d.items():
@@ -276,13 +285,20 @@ async def status(ctx, val=None):
                     players = value['players']
                     max_players = value['maxplayers']
                     mods_total = value['modstotal']
+                    raw_player_list = value['playerslist']
+                    player_list = '\n'.join(list(raw_player_list.split(";")))
 
                     # remove name decorators:
                     name = ''.join([raw_name[i] for i in range(len(raw_name)) if raw_name[i] != '^' and (i == 0 or raw_name[i-1] != '^')])
                     print(name)
-                    
+
                     status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-                    status_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers: {players} / {max_players}")
+                    if int(players) <= 4 and int(players) != 0:
+                        print('using player names')
+                        status_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers:\n{player_list}")
+                    else:
+                        print('using player count')
+                        status_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers: {players} / {max_players}")
                     await ctx.send(embed=status_embed)
         print('\n')
 
