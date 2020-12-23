@@ -13,7 +13,7 @@ from discord.ext.commands import has_permissions, MissingPermissions
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or("a! "), description="The bot for all your BeamMP needs.", help_command = None, case_insensitive = True)
+bot = commands.Bot(command_prefix=commands.when_mentioned_or("b! "), description="The bot for all your BeamMP needs.", help_command = None, case_insensitive = True)
 
 print("Bot is starting...")
 
@@ -33,7 +33,7 @@ conn.commit()
 async def on_ready():
 
     # Set bot status:
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="a! help"))
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="b! help"))
 
     print('\n\nLogged in as')
     print(bot.user.name)
@@ -57,7 +57,7 @@ async def help(ctx, args=None):
         )
         help_embed.add_field(
             name="Details",
-            value="The prefix for this bot is \"`a!`\" -- Remember the space between the prefix and command!\n\nType `a! help <command name>` for more details about a command.",
+            value="The prefix for this bot is \"`b!`\" -- Remember the space between the prefix and command!\n\nType `b! help <command name>` for more details about a command.",
             inline=False
         )
 
@@ -80,7 +80,7 @@ async def help(ctx, args=None):
 
 
 
-@bot.command(name = "save", description = "Can be run by admins only.\n\nThis command sets the server that can be reached by doing the `a! check` command\n\n**Impemetations:**\n`a! save server <user>`\n`a! save info`", pass_context=True)
+@bot.command(name = "save", description = "Can be run by admins only.\n\nThis command sets the server that can be reached by doing the `b! check` command\n\n**Impemetations:**\n`b! save server <user>`\n`b! save info`", pass_context=True)
 @commands.cooldown(1, 10, commands.BucketType.guild)
 @has_permissions(administrator=True)
 async def save(ctx, change=None, val=None):
@@ -110,7 +110,7 @@ async def save(ctx, change=None, val=None):
             print(f"Set server owner to {uid} for guild {gid}\n")
 
         except commands.UserNotFound:
-            save_embed.add_field(name='ERROR', value="Please enter a valid user\n`a! save server <user>`\n\nExample:\n`a! save server dummy#1234`")
+            save_embed.add_field(name='ERROR', value="Please enter a valid user\n`b! save server <user>`\n\nExample:\n`b! save server dummy#1234`")
 
 
     elif change == "info":
@@ -137,7 +137,7 @@ async def save(ctx, change=None, val=None):
 
 
     else:
-        save_embed.add_field(name='ERROR', value="Please enter a valid syntax\n`a! save <type>...`\n\nFor more info, do `a! help save`")
+        save_embed.add_field(name='ERROR', value="Please enter a valid syntax\n`b! save <type>...`\n\nFor more info, do `b! help save`")
         print("No syntax was given.\n")
     
     conn.commit()
@@ -168,7 +168,7 @@ async def check(ctx):
 
     if result[1] is None:
         check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-        check_embed.add_field(name="ERROR", value="No Server has been set for this guild.\n\nTo set the server have an admin run the `a! save server` command.\nYou can also do the `a! status <user>` command to get the status of servers run by a user")
+        check_embed.add_field(name="ERROR", value="No Server has been set for this guild.\n\nTo set the server have an admin run the `b! save server` command.\nYou can also do the `b! status <user>` command to get the status of servers run by a user")
         await ctx.send(embed=check_embed)
         return
     else:
@@ -243,7 +243,7 @@ async def status(ctx, val=None):
     if val is None:
         print("no user provided\n")
         status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-        status_embed.add_field(name='ERROR', value='No user specifyed.\nCorrect syntax: `a! status <user>`')
+        status_embed.add_field(name='ERROR', value='No user specifyed.\nCorrect syntax: `b! status <user>`')
         await ctx.send(embed=status_embed)
         return
 
@@ -254,7 +254,7 @@ async def status(ctx, val=None):
     except commands.UserNotFound:
         print("User not found error\n")
         status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-        status_embed.add_field(name='ERROR', value="Please enter a valid user\n`a! status <user>`\n\nExample:\n`a! status dummy#1234`\n\nRemember, users are capital sensitive!")
+        status_embed.add_field(name='ERROR', value="Please enter a valid user\n`b! status <user>`\n\nExample:\n`b! status dummy#1234`\n\nRemember, users are capital sensitive!")
         await ctx.send(embed=status_embed)
         return
 
