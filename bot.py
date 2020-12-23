@@ -114,7 +114,6 @@ async def save(ctx, change=None, val=None):
 
 
     elif change == "info":
-        # save_embed.add_field(name='Information for this Guild:', value="unfinished command.")
 
         try:
             c.execute("SELECT * FROM main WHERE guild_id=?", (gid,))
