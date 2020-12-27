@@ -227,7 +227,7 @@ async def check(ctx):
 
     if times == 0:
         check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-        check_embed.add_field(name='ERROR', value='No servers found that are owned by the given user')
+        check_embed.add_field(name='ERROR', value='No online BeamMP servers could be found that are owned by the given user')
         await ctx.send(embed=check_embed)
         return
 
@@ -306,7 +306,7 @@ async def status(ctx, val=None):
 
     if times == 0:
         status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-        status_embed.add_field(name='ERROR', value='No servers found that are owned by the given user')
+        status_embed.add_field(name='ERROR', value='No online BeamMP servers could be found that are owned by the given user')
         await ctx.send(embed=status_embed)
         return
 
