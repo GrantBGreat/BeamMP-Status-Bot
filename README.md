@@ -34,3 +34,5 @@ Players (if is less than 5 then it states the player names, if is greater than 4
 ```
 
 **Screenshot Examples:**
+![Output with under 5 people online](/relative/path/to/img.jpg?raw=true)
+![Output with over 4 people online](/relative/path/to/img.jpg?raw=true)
