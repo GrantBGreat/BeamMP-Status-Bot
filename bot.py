@@ -227,7 +227,7 @@ async def check(ctx):
 
     if times == 0:
         check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-        check_embed.add_field(name='ERROR', value='No servers found that are owned by the given user')
+        check_embed.add_field(name='ERROR', value='No online BeamMP servers could be found that are owned by the given user')
         await ctx.send(embed=check_embed)
         return
 
@@ -306,7 +306,7 @@ async def status(ctx, val=None):
 
     if times == 0:
         status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-        status_embed.add_field(name='ERROR', value='No servers found that are owned by the given user')
+        status_embed.add_field(name='ERROR', value='No online BeamMP servers could be found that are owned by the given user')
         await ctx.send(embed=status_embed)
         return
 
@@ -334,8 +334,8 @@ async def invite(ctx):
 @save.error
 async def save_error(ctx, error):
     if isinstance(error, MissingPermissions):
-        error_embed = discord.Embed(title="Settings:", color = 0x8a3f0a)
-        error_embed.add_field(name='No perms', value="Sorry {}, you do not have permissions to do that!".format(ctx.message.author))
+        error_embed = discord.Embed(title="ERROR", color = 0x8a3f0a)
+        error_embed.add_field(name='No permission', value="Sorry {}, you do not have permissions to do that!".format(ctx.message.author.name))
         await ctx.send(embed=error_embed)
 
 @bot.event
