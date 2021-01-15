@@ -4,6 +4,7 @@ import discord
 import sqlite3
 import urllib.request
 import json
+import datetime, time
 
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -28,6 +29,8 @@ c.execute('''CREATE TABLE IF NOT EXISTS main (
 
 conn.commit()
 
+start_time = time.time()
+command_uses = 0
 
 @bot.event
 async def on_ready():
@@ -45,6 +48,9 @@ async def on_ready():
 @bot.command(name="help", description = "Learn what each command does.", pass_context=True) #help command
 @commands.cooldown(1, 5, commands.BucketType.guild)
 async def help(ctx, args=None):
+    global command_uses
+    command_uses += 1
+
     help_embed = discord.Embed(title="Stuck? Join the Support Server!", color = 0x8a3f0a, url='https://discord.gg/vhGhEsDyCf')
     command_names_list = [i.name for i in bot.commands]
 
@@ -84,6 +90,8 @@ async def help(ctx, args=None):
 @commands.cooldown(1, 10, commands.BucketType.guild)
 @has_permissions(administrator=True)
 async def save(ctx, change=None, val=None):
+    global command_uses
+    command_uses += 1
 
     # get guild in db
     gid = ctx.message.guild.id
@@ -148,6 +156,8 @@ async def save(ctx, change=None, val=None):
 @bot.command(name = "check", description = "Checks the status of the BeamMP server(s) set for this guild.", pass_context=True)
 @commands.cooldown(1, 10, commands.BucketType.guild)
 async def check(ctx):
+    global command_uses
+    command_uses += 1
     await ctx.channel.trigger_typing()
 
     # get guild in db
@@ -237,6 +247,8 @@ async def check(ctx):
 @bot.command(name = "status", description = "Checks the status of the BeamMP server(s) associated with the user provided.", pass_context=True)
 @commands.cooldown(1, 10, commands.BucketType.guild)
 async def status(ctx, val=None):
+    global command_uses
+    command_uses += 1
     await ctx.channel.trigger_typing()
 
     gid = ctx.message.guild.id
@@ -317,6 +329,9 @@ async def status(ctx, val=None):
 @bot.command(name='support', description="Sends a link to the support server")
 @commands.cooldown(1, 15, commands.BucketType.guild)
 async def support(ctx):
+    global command_uses
+    command_uses += 1
+
     support_embed = discord.Embed(title="Join the Support Server!", color = 0x8a3f0a, url='https://discord.gg/vhGhEsDyCf') # link to support server
     await ctx.send(embed = support_embed)
     gid = ctx.message.guild.id
@@ -327,10 +342,42 @@ async def support(ctx):
 @bot.command(name='invite', description="Sends a link to invite the bot")
 @commands.cooldown(1, 15, commands.BucketType.guild)
 async def invite(ctx):
+    global command_uses
+    command_uses += 1
+
     invite_embed = discord.Embed(title='Invite the bot!', color = 0x8a3f0a, url='https://discord.com/api/oauth2/authorize?client_id=784631695902375956&permissions=2048&scope=bot') # link to invite bot.
     await ctx.send(embed = invite_embed)
     gid = ctx.message.guild.id
     print(f"Sent bot invite to guild {gid}\n")
+
+
+
+@bot.command(name = "botstats", description = "Checks the status & uptime of the bot.", pass_context=True)
+@commands.cooldown(1, 30, commands.BucketType.guild)
+async def botstats(ctx):
+    global command_uses
+    command_uses += 1
+
+    # find uptime
+    current_time = time.time()
+    difference = int(round(current_time - start_time))
+    text = str(datetime.timedelta(seconds=difference))
+
+    # create embed
+    bot_embed = discord.Embed(name="BeamMP Status Bot", colour=0x8a3f0a)
+    # add Uptime
+    bot_embed.add_field(name="Uptime", value=text)
+    # add commands run
+    bot_embed.add_field(name="Commands run", value=str(command_uses))
+
+
+
+    # send the embed:
+    try:
+        await ctx.send(embed=bot_embed)
+    except discord.HTTPException:
+        await ctx.send("Current uptime: " + text)
+
 
 ########################################CATCH-ERRORS##################################################################
 
@@ -340,6 +387,10 @@ async def save_error(ctx, error):
         error_embed = discord.Embed(title="ERROR", color = 0x8a3f0a)
         error_embed.add_field(name='No permission', value="Sorry {}, you do not have permissions to do that!".format(ctx.message.author.name))
         await ctx.send(embed=error_embed)
+
+@botstats.error
+async def botstats_error(ctx, error):
+    print(error)
 
 @bot.event
 async def on_command_error(ctx, error):
