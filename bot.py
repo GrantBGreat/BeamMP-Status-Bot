@@ -112,7 +112,7 @@ async def save(ctx, change=None, val=None):
         try:
             raw = val
             uid = (await commands.UserConverter().convert(ctx, val)).id
-            save_embed.add_field(name='Success!', value=f"The BeamMP server owner for this guild has been set to:\n{raw}\nid: {uid}\n\nIf this is not the correct user then simply run the command again. Remember that users are caps sensitive.")
+            save_embed.add_field(name='Success!', value=f"The BeamMP server owner for this guild has been set to:\n`{raw}`\nid: `{uid}`\n\nIf this is not the correct user then simply run the command again. Remember that users are caps sensitive.")
 
             # add uid to db:
             c.execute("UPDATE main SET owner_id = ? WHERE guild_id = ?", (uid, gid))
@@ -380,7 +380,7 @@ async def beamstats(ctx):
 
     beamstats_embed = discord.Embed(title="BeamMP Server Stats:", color = 0x8a3f0a)
     beamstats_embed.add_field(name='Public Servers:', value=f'Server count: {beam_server_count}\nPlayer count: {player_count}\nMod count: {mod_count}', inline=False)
-    beamstats_embed.add_field(name='All Servers:', value=f'The bot is currently only able to grab information about public BeamMP servers. To get informaiton on all servers visit the [stats page](https://beamng-mp.com/stats) on BeamMP\'s website', inline=False)
+    beamstats_embed.add_field(name='All Servers:', value=f'The bot is currently only able to grab information about public BeamMP servers. To get informaiton on all servers visit the [stats page](https://beamng-mp.com/stats) on BeamMP\'s website.', inline=False)
     await ctx.send(embed=beamstats_embed)
 
 
