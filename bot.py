@@ -192,12 +192,19 @@ async def check(ctx):
 
     print(f"Finding servers for user {username} in {gid}")
 
-    req = urllib.request.Request('https://beammp.com/servers-info')
-    req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36')
-    data = urllib.request.urlopen(req)
-    result = data.read()
-    result = result.decode('utf-8')
-    dictionary = json.loads(result)
+    try:
+        req = urllib.request.Request('https://beammp.com/servers-info')
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36')
+        data = urllib.request.urlopen(req)
+        result = data.read()
+        result = result.decode('utf-8')
+        dictionary = json.loads(result)
+    except Exception as e:
+        check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+        check_embed.add_field(name="ERROR", value="There was an error contacting BeamMP servers. This is most likely a problem on BeamMP's end.")
+        await ctx.send(embed=check_embed)
+        print(f"error contacting servers:\n{e}\n")
+        return
 
     print(f"checking {len(dictionary)} servers...")
     print(f"Sending server information to {gid} for:")
@@ -275,12 +282,19 @@ async def status(ctx, val=None):
 
     print(f"Finding servers for user {username} in {gid}")
 
-    req = urllib.request.Request('https://beammp.com/servers-info')
-    req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36')
-    data = urllib.request.urlopen(req)
-    result = data.read()
-    result = result.decode('utf-8')
-    dictionary = json.loads(result)
+    try:
+        req = urllib.request.Request('https://beammp.com/servers-info')
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36')
+        data = urllib.request.urlopen(req)
+        result = data.read()
+        result = result.decode('utf-8')
+        dictionary = json.loads(result)
+    except Exception as e:
+        status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+        status_embed.add_field(name="ERROR", value="There was an error contacting BeamMP servers. This is most likely a problem on BeamMP's end.")
+        await ctx.send(embed=status_embed)
+        print(f"error contacting servers:\n{e}\n")
+        return
 
     print(f"checking {len(dictionary)} servers...")
     print(f"Sending server information to {gid} for:")
@@ -326,6 +340,51 @@ async def status(ctx, val=None):
         return
 
 
+@bot.command(name = "beamstats", description = "Show the stats of BeamMP servers in general.", pass_context=True)
+@commands.cooldown(1, 10, commands.BucketType.guild)
+async def beamstats(ctx):
+    global command_uses
+    command_uses += 1
+    await ctx.channel.trigger_typing()
+
+    try:
+        req = urllib.request.Request('https://beammp.com/servers-info')
+        req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36')
+        data = urllib.request.urlopen(req)
+        result = data.read()
+        result = result.decode('utf-8')
+        dictionary = json.loads(result)
+    except Exception as e:
+        beamstats_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+        beamstats_embed.add_field(name="ERROR", value="There was an error contacting BeamMP servers. This is most likely a problem on BeamMP's end.")
+        await ctx.send(embed=beamstats_embed)
+        print(f"error contacting servers:\n{e}\n")
+        return
+
+    beam_server_count = len(dictionary)
+    player_count = 0
+    mod_count = 0
+
+    try:
+        for d in dictionary:
+            for key, value in d.items():
+                if isinstance(value, dict):
+                    players = value['players']
+                    player_count += int(players)
+                    mods_total = value['modstotal']
+                    mod_count += int(mods_total)
+
+        print('\n')
+
+    except Exception as e:
+        print(f"ERROR: {e}\n")
+
+    beamstats_embed = discord.Embed(title="BeamMP Server Stats:", color = 0x8a3f0a)
+    beamstats_embed.add_field(name='Public Servers:', value=f'Server count: {beam_server_count}\nPlayer count: {player_count}\nMod count: {mod_count}', inline=False)
+    beamstats_embed.add_field(name='All Servers:', value=f'The bot is currently only able to grab information about public BeamMP servers. To get informaiton on all servers visit the [stats page](https://beamng-mp.com/stats) on BeamMP\'s website', inline=False)
+    await ctx.send(embed=beamstats_embed)
+
+
 @bot.command(name='support', description="Sends a link to the support server")
 @commands.cooldown(1, 15, commands.BucketType.guild)
 async def support(ctx):
@@ -357,6 +416,7 @@ async def invite(ctx):
 async def botstats(ctx):
     global command_uses
     command_uses += 1
+    await ctx.channel.trigger_typing()
 
     # find uptime
     current_time = time.time()
