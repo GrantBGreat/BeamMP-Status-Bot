@@ -87,7 +87,7 @@ async def help(ctx, args=None):
 
 
 
-@bot.command(name = "save", description = "Can be run by admins only.\n\nThis command sets the server that can be reached by doing the `b! check` command\n\n**Impemetations:**\n`b! save server <user>`\n`b! save info`", pass_context=True)
+@bot.command(name = "save", description = "Can be run by admins only.\n\nThis command sets the server that can be reached by doing the `b! check` command.\n\n**Impemetations:**\n`b! save server <user>`\n`b! save info`", pass_context=True)
 @commands.cooldown(1, 10, commands.BucketType.guild)
 @has_permissions(administrator=True)
 async def save(ctx, change=None, val=None):
