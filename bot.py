@@ -4,7 +4,8 @@ import discord
 import sqlite3
 import urllib.request
 import json
-import datetime, time
+from datetime import datetime
+import time
 
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -29,7 +30,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS main (
 
 conn.commit()
 
-start_time = time.time()
+start_time = datetime.now()
 command_uses = 0
 
 @bot.event
@@ -374,10 +375,8 @@ async def beamstats(ctx):
                     mods_total = value['modstotal']
                     mod_count += int(mods_total)
 
-        print('\n')
-
     except Exception as e:
-        print(f"ERROR: {e}\n")
+        print(f"ERROR in beamstats command: {e}\n")
 
     beamstats_embed = discord.Embed(title="BeamMP Server Stats:", color = 0x8a3f0a)
     beamstats_embed.add_field(name='Public Servers:', value=f'Server count: {beam_server_count}\nPlayer count: {player_count}\nMod count: {mod_count}', inline=False)
@@ -416,19 +415,35 @@ async def invite(ctx):
 async def botstats(ctx):
     global command_uses
     command_uses += 1
-    await ctx.channel.trigger_typing()
 
     # find uptime
-    current_time = time.time()
-    difference = int(round(current_time - start_time))
-    text = str(datetime.timedelta(seconds=difference))
+    current_time = datetime.now()
+    diff = current_time - start_time
+    seconds = diff.total_seconds()
+    intervals = (
+        ('Days', 86400),    # 60 * 60 * 24
+        ('Hours', 3600),    # 60 * 60
+        ('Minutes', 60),
+        ('Seconds', 1),
+        )
+
+    result = []
+
+    for name, count in intervals:
+        value = seconds // count
+        if value:
+            seconds -= value * count
+            if value == 1:
+                name = name.rstrip('s')
+            result.append("{} {}".format(round(value), name))
+    uptime = ', '.join(result)
 
     # create embed
     bot_embed = discord.Embed(name="BeamMP Status Bot", colour=0x8a3f0a)
     # add Uptime
-    bot_embed.add_field(name="Uptime", value=text)
+    bot_embed.add_field(name="Uptime", value=uptime, inline=False)
     # add commands run
-    bot_embed.add_field(name="Commands run", value=str(command_uses))
+    bot_embed.add_field(name="Commands run", value=str(command_uses), inline=False)
 
 
 
