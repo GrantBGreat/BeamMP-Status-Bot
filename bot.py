@@ -341,7 +341,7 @@ async def status(ctx, val=None):
         return
 
 
-@bot.command(name = "beamstats", description = "Show the stats of BeamMP servers in general.", pass_context=True)
+@bot.command(name = "beamstats", description = "Show the stats for BeamMP servers as a whole.", pass_context=True)
 @commands.cooldown(1, 10, commands.BucketType.guild)
 async def beamstats(ctx):
     global command_uses
@@ -410,7 +410,7 @@ async def invite(ctx):
 
 
 
-@bot.command(name = "botstats", description = "Checks the status & uptime of the bot.", pass_context=True)
+@bot.command(name = "botstats", description = "Checks the uptime & number of commands run for the bot.", pass_context=True)
 @commands.cooldown(1, 30, commands.BucketType.guild)
 async def botstats(ctx):
     global command_uses
