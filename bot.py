@@ -411,7 +411,7 @@ async def invite(ctx):
 
 
 @bot.command(name = "botstats", description = "Checks the uptime & number of commands run for the bot.", pass_context=True)
-@commands.cooldown(1, 30, commands.BucketType.guild)
+@commands.cooldown(1, 10, commands.BucketType.guild)
 async def botstats(ctx):
     global command_uses
     command_uses += 1
