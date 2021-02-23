@@ -376,8 +376,7 @@ async def beamstats(ctx):
                     player_count += int(players)
                     mods_total = value['modstotal']
                     mod_count += int(mods_total)
-                    mod_list += value['modlist'].split(';')
-                    print(mod_list)
+                    mod_list.extend(value['modlist'].split(';'))
 
         # turn mod list into set to get only unique items, then get the length of that set:
         unique_mod_count = set(mod_list)
