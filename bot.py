@@ -376,10 +376,12 @@ async def beamstats(ctx):
                     player_count += int(players)
                     mods_total = value['modstotal']
                     mod_count += int(mods_total)
-                    mod_list.extend(value['modlist'].split(';'))
+                    for x in value['modlist'].split(';'):
+                        if x not in mod_list:
+                            mod_list.append(x)
 
         # turn mod list into set to get only unique items, then get the length of that set:
-        unique_mod_count = set(mod_list)
+        unique_mod_count = len(mod_list)-1 #subtract one because the empty spot after the last ';'
         
 
     except Exception as e:
@@ -388,7 +390,7 @@ async def beamstats(ctx):
 
 
     beamstats_embed = discord.Embed(title="BeamMP Server Stats:", color = 0x8a3f0a)
-    beamstats_embed.add_field(name='Public Servers:', value=f'Server Count: {beam_server_count}\nPlayer Count: {player_count}\nTotal Mod Count: {mod_count}\nUnique Mod Count: {unique_mod_count}', inline=False)
+    beamstats_embed.add_field(name='Public Servers:', value=f'Server Count: {beam_server_count}\nPlayer Count: {player_count}\nUnique Mod Count: {unique_mod_count}\nTotal Mod Count: {mod_count}', inline=False)
     beamstats_embed.add_field(name='All Servers:', value=f'The bot is currently only able to grab information about public BeamMP servers. To get informaiton on all servers visit the [stats page](https://beamng-mp.com/stats) on BeamMP\'s website.', inline=False)
     await ctx.send(embed=beamstats_embed)
 
