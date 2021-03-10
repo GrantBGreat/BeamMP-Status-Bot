@@ -64,7 +64,7 @@ async def help(ctx, args=None):
         )
         help_embed.add_field(
             name="Details",
-            value="The prefix for this bot is \"`b!`\" -- Remember the space between the prefix and command!\n\nType `a! help <command name>` for more details about a command.",
+            value="The prefix for this bot is \"`b! `\" -- Remember the space between the prefix and command!\n\nType `a! help <command name>` for more details about a command.",
             inline=False
         )
 
