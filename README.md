@@ -25,6 +25,10 @@ invite - sends a link to invite the bot.
 save <type> - A command that can only be run by server administrators where the type can be 'server' to save a server owner for the 'b! check' command or 'info' to get the current settings for the guild.
 
 check - like the 'b! status' command, but returns the information for servers owned by the set user for the guild.
+
+botstats - Checks the uptime & number of commands run for the bot.
+
+beamstats - Show the stats for BeamMP servers as a whole.
 ```
 
 **Format of output information:** *this is subject to change*
