@@ -271,15 +271,15 @@ async def status(ctx, val=None):
         return
 
     print("Checking if user is valid...")
-    username = ''
-    try:
-        username = (await commands.UserConverter().convert(ctx, val))
-    except commands.UserNotFound:
-        print("User not found error\n")
-        status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-        status_embed.add_field(name='ERROR', value="Please enter a valid user\n`a! status <user>`\n\nExample:\n`a! status dummy#1234`\n\nRemember, users are capital sensitive!")
-        await ctx.send(embed=status_embed)
-        return
+    username = str(val)
+    #try:
+    #    username = (await commands.UserConverter().convert(ctx, val))
+    #except commands.UserNotFound:
+    #    print("User not found error\n")
+    #    status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+    #    status_embed.add_field(name='ERROR', value="Please enter a valid user\n`a! status <user>`\n\nExample:\n`a! status dummy#1234`\n\nRemember, users are capital sensitive!")
+    #    await ctx.send(embed=status_embed)
+    #    return
 
     print(f"Finding servers for user {username} in {gid}")
 
