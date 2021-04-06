@@ -194,7 +194,7 @@ async def check(ctx):
     print(f"Finding servers for user {username} in {gid}")
 
     try:
-        req = urllib.request.Request('https://beammp.com/servers-info')
+        req = urllib.request.Request('https://backend.beammp.com/servers-info')
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36')
         data = urllib.request.urlopen(req)
         result = data.read()
@@ -284,7 +284,7 @@ async def status(ctx, val=None):
     print(f"Finding servers for user {username} in {gid}")
 
     try:
-        req = urllib.request.Request('https://beammp.com/servers-info')
+        req = urllib.request.Request('https://backend.beammp.com/servers-info')
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36')
         data = urllib.request.urlopen(req)
         result = data.read()
@@ -349,7 +349,7 @@ async def beamstats(ctx):
     await ctx.channel.trigger_typing()
 
     try:
-        req = urllib.request.Request('https://beammp.com/servers-info')
+        req = urllib.request.Request('https://backend.beammp.com/servers-info')
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36')
         data = urllib.request.urlopen(req)
         result = data.read()
