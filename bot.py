@@ -210,35 +210,29 @@ async def check(ctx):
     print(f"checking {len(dictionary)} servers...")
     print(f"Sending server information to {gid} for:")
     times = 0
-    name = ''
-    players = ''
-    max_players = ''
-    mods_total = ''
-    player_list = ''
     try:
         for d in dictionary:
-            for key, value in d.items():
-                if isinstance(value, dict) and 'owner' in value and value['owner'] == str(username):
-                    times += 1
-                    raw_name = value['sname']
-                    players = value['players']
-                    max_players = value['maxplayers']
-                    mods_total = value['modstotal']
-                    raw_player_list = value['playerslist']
-                    player_list = '\n'.join(list(raw_player_list.split(";")))
+            if d['owner'] == str(username):
+                times += 1
+                raw_name = d['sname']
+                players = d['players']
+                max_players = d['maxplayers']
+                mods_total = d['modstotal']
+                raw_player_list = d['playerslist']
+                player_list = '\n'.join(list(raw_player_list.split(";")))
 
-                    # remove name decorators:
-                    name = ''.join([raw_name[i] for i in range(len(raw_name)) if raw_name[i] != '^' and (i == 0 or raw_name[i-1] != '^')])
-                    print(name)
+                # remove name decorators:
+                name = ''.join([raw_name[i] for i in range(len(raw_name)) if raw_name[i] != '^' and (i == 0 or raw_name[i-1] != '^')])
+                print(name)
 
-                    status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-                    if int(players) <= 4 and int(players) != 0:
-                        print('using player names')
-                        status_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers:\n{player_list}")
-                    else:
-                        print('using player count')
-                        status_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers: {players} / {max_players}")
-                    await ctx.send(embed=status_embed)
+                status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+                if int(players) <= 4 and int(players) != 0:
+                    print('using player names')
+                    status_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers:\n{player_list}")
+                else:
+                    print('using player count')
+                    status_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers: {players} / {max_players}")
+                await ctx.send(embed=status_embed)
         print('\n')
 
     except Exception as e:
@@ -307,28 +301,27 @@ async def status(ctx, val=None):
     player_list = ''
     try:
         for d in dictionary:
-            for key, value in d.items():
-                if isinstance(value, dict) and 'owner' in value and value['owner'] == str(username):
-                    times += 1
-                    raw_name = value['sname']
-                    players = value['players']
-                    max_players = value['maxplayers']
-                    mods_total = value['modstotal']
-                    raw_player_list = value['playerslist']
-                    player_list = '\n'.join(list(raw_player_list.split(";")))
+            if d['owner'] == str(username):
+                times += 1
+                raw_name = d['sname']
+                players = d['players']
+                max_players = d['maxplayers']
+                mods_total = d['modstotal']
+                raw_player_list = d['playerslist']
+                player_list = '\n'.join(list(raw_player_list.split(";")))
 
-                    # remove name decorators:
-                    name = ''.join([raw_name[i] for i in range(len(raw_name)) if raw_name[i] != '^' and (i == 0 or raw_name[i-1] != '^')])
-                    print(name)
+                # remove name decorators:
+                name = ''.join([raw_name[i] for i in range(len(raw_name)) if raw_name[i] != '^' and (i == 0 or raw_name[i-1] != '^')])
+                print(name)
 
-                    status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-                    if int(players) <= 4 and int(players) != 0:
-                        print('using player names')
-                        status_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers:\n{player_list}")
-                    else:
-                        print('using player count')
-                        status_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers: {players} / {max_players}")
-                    await ctx.send(embed=status_embed)
+                status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+                if int(players) <= 4 and int(players) != 0:
+                    print('using player names')
+                    status_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers:\n{player_list}")
+                else:
+                    print('using player count')
+                    status_embed.add_field(name=f"Status of: {name}", value=f"\nMods: {mods_total}\nPlayers: {players} / {max_players}")
+                await ctx.send(embed=status_embed)
         print('\n')
 
     except Exception as e:
@@ -368,12 +361,10 @@ async def beamstats(ctx):
 
     try:
         for d in dictionary:
-            for key, value in d.items():
-                if isinstance(value, dict):
-                    players = value['players']
-                    player_count += int(players)
-                    mods_total = value['modstotal']
-                    mod_count += int(mods_total)
+            players = d['players']
+            player_count += int(players)
+            mods_total = d['modstotal']
+            mod_count += int(mods_total)
 
     except Exception as e:
         print(f"ERROR in beamstats command: {e}\n")
