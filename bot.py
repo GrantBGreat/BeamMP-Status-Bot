@@ -15,7 +15,7 @@ from discord.ext.commands import has_permissions, MissingPermissions
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or("b! "), description="The bot for all your BeamMP needs.", help_command = None, case_insensitive = True)
+bot = commands.Bot(command_prefix=commands.when_mentioned_or("a! "), description="The bot for all your BeamMP needs.", help_command = None, case_insensitive = True)
 
 print("Bot is starting...")
 
@@ -37,7 +37,7 @@ command_uses = 0
 async def on_ready():
 
     # Set bot status:
-    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="b! help"))
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="a! help"))
 
     print('\n\nLogged in as')
     print(bot.user.name)
@@ -64,7 +64,7 @@ async def help(ctx, args=None):
         )
         help_embed.add_field(
             name="Details",
-            value="The prefix for this bot is \"`b!`\" -- Remember the space between the prefix and command!\n\nType `b! help <command name>` for more details about a command.",
+            value="The prefix for this bot is \"`b! `\" -- Remember the space between the prefix and command!\n\nType `a! help <command name>` for more details about a command.",
             inline=False
         )
 
@@ -87,7 +87,7 @@ async def help(ctx, args=None):
 
 
 
-@bot.command(name = "save", description = "Can be run by admins only.\n\nThis command sets the server that can be reached by doing the `b! check` command.\n\n**Impemetations:**\n`b! save server <user>`\n`b! save info`", pass_context=True)
+@bot.command(name = "save", description = "Can be run by admins only.\n\nThis command sets the server that can be reached by doing the `a! check` command.\n\n**Impemetations:**\n`a! save server <user>`\n`a! save info`", pass_context=True)
 @commands.cooldown(1, 10, commands.BucketType.guild)
 @has_permissions(administrator=True)
 async def save(ctx, change=None, val=None):
@@ -119,7 +119,7 @@ async def save(ctx, change=None, val=None):
             print(f"Set server owner to {uid} for guild {gid}\n")
 
         except commands.UserNotFound:
-            save_embed.add_field(name='ERROR', value="Please enter a valid user\n`b! save server <user>`\n\nExample:\n`b! save server dummy#1234`")
+            save_embed.add_field(name='ERROR', value="Please enter a valid user\n`a! save server <user>`\n\nExample:\n`a! save server dummy#1234`")
 
 
     elif change == "info":
@@ -146,7 +146,7 @@ async def save(ctx, change=None, val=None):
 
 
     else:
-        save_embed.add_field(name='ERROR', value="Please enter a valid syntax\n`b! save <type>...`\n\nFor more info, do `b! help save`")
+        save_embed.add_field(name='ERROR', value="Please enter a valid syntax\n`a! save <type>...`\n\nFor more info, do `a! help save`")
         print("No syntax was given.\n")
     
     conn.commit()
@@ -180,7 +180,7 @@ async def check(ctx):
 
     if result[1] is None:
         check_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-        check_embed.add_field(name="ERROR", value="No Server has been set for this guild.\n\nTo set the server have an admin run the `b! save server` command.\nYou can also do the `b! status <user>` command to get the status of servers run by a user")
+        check_embed.add_field(name="ERROR", value="No Server has been set for this guild.\n\nTo set the server have an admin run the `a! save server` command.\nYou can also do the `a! status <user>` command to get the status of servers run by a user")
         await ctx.send(embed=check_embed)
         return
     else:
@@ -260,20 +260,20 @@ async def status(ctx, val=None):
     if val is None:
         print("no user provided\n")
         status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-        status_embed.add_field(name='ERROR', value='No user specifyed.\nCorrect syntax: `b! status <user>`')
+        status_embed.add_field(name='ERROR', value='No user specifyed.\nCorrect syntax: `a! status <user>`')
         await ctx.send(embed=status_embed)
         return
 
     print("Checking if user is valid...")
-    username = ''
-    try:
-        username = (await commands.UserConverter().convert(ctx, val))
-    except commands.UserNotFound:
-        print("User not found error\n")
-        status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
-        status_embed.add_field(name='ERROR', value="Please enter a valid user\n`b! status <user>`\n\nExample:\n`b! status dummy#1234`\n\nRemember, users are capital sensitive!")
-        await ctx.send(embed=status_embed)
-        return
+    username = str(val)
+    #try:
+    #    username = (await commands.UserConverter().convert(ctx, val))
+    #except commands.UserNotFound:
+    #    print("User not found error\n")
+    #    status_embed = discord.Embed(title="Server Status:", color = 0x8a3f0a)
+    #    status_embed.add_field(name='ERROR', value="Please enter a valid user\n`a! status <user>`\n\nExample:\n`a! status dummy#1234`\n\nRemember, users are capital sensitive!")
+    #    await ctx.send(embed=status_embed)
+    #    return
 
     print(f"Finding servers for user {username} in {gid}")
 
@@ -358,19 +358,30 @@ async def beamstats(ctx):
     beam_server_count = len(dictionary)
     player_count = 0
     mod_count = 0
+    mod_list = []
+    unique_mod_count = []
 
     try:
         for d in dictionary:
+
             players = d['players']
             player_count += int(players)
             mods_total = d['modstotal']
             mod_count += int(mods_total)
+            for x in d['modlist'].split(';'):
+                if x not in mod_list:
+                    mod_list.append(x)
+
+        # turn mod list into set to get only unique items, then get the length of that set:
+        unique_mod_count = len(mod_list)-1 #subtract one because the empty spot after the last ';'
 
     except Exception as e:
         print(f"ERROR in beamstats command: {e}\n")
 
+
+
     beamstats_embed = discord.Embed(title="BeamMP Server Stats:", color = 0x8a3f0a)
-    beamstats_embed.add_field(name='Public Servers:', value=f'Server count: {beam_server_count}\nPlayer count: {player_count}\nMod count: {mod_count}', inline=False)
+    beamstats_embed.add_field(name='Public Servers:', value=f'Server Count: {beam_server_count}\nPlayer Count: {player_count}\nUnique Mod Count: {unique_mod_count}\nTotal Mod Count: {mod_count}', inline=False)
     beamstats_embed.add_field(name='All Servers:', value=f'The bot is currently only able to grab information about public BeamMP servers. To get informaiton on all servers visit the [stats page](https://beamng-mp.com/stats) on BeamMP\'s website.', inline=False)
     await ctx.send(embed=beamstats_embed)
 
