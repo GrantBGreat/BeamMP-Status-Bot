@@ -9,6 +9,8 @@ This bot was developed to aid in checking the status of BeamMP servers. However,
 
 For more help & update announcements, [join the discord](https://discord.gg/dX34pgyHzp)!
 
+![Discord Banner 2](https://discordapp.com/api/guilds/[SERVER ID]/widget.png?style=banner2)
+
 # About the bot:
 
 The BeamMP Status Bot allows the admin of a discord server to do a `b! save <discord user>` command to save a discord user to the bots database. After this setup is done, any member of the discord server will be able to run the `b! check` command to check the status of all servers owned by the saved user. Any member of a discord server can also do `b! status <discord user>` to get the status of servers owned by that user.
