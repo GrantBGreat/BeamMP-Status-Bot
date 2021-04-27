@@ -48,3 +48,4 @@ Players (if is less than 5 then it states the player names, if is greater than 4
 # TODO:
 * more error handling
 * up max player count on embed
+* add ability to have args on `check` command
