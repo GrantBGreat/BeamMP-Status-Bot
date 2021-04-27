@@ -9,7 +9,7 @@ This bot was developed to aid in checking the status of BeamMP servers. However,
 
 For more help & update announcements, [join the discord](https://discord.gg/dX34pgyHzp)!
 
-![Discord Banner 2](https://discordapp.com/api/guilds/[SERVER ID]/widget.png?style=banner2)
+![Discord Banner 2](https://discordapp.com/api/guilds/789657841895735337/widget.png?style=banner2)
 
 # About the bot:
 
